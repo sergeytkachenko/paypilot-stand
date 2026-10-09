@@ -31,4 +31,8 @@ def get_provider():
     if kind == "openai":
         from app.agent.providers.openai_provider import OpenAIProvider
         return OpenAIProvider()
-    raise ValueError(f"Unknown LLM_PROVIDER={kind!r} (mock | anthropic | openai)")
+    if kind == "gemini":
+        from app.agent.providers.gemini_provider import GeminiProvider
+        return GeminiProvider()
+    raise ValueError(f"Unknown LLM_PROVIDER={kind!r} "
+        "(mock | anthropic | openai | gemini)")

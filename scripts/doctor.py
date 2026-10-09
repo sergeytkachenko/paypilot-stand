@@ -56,9 +56,15 @@ def main() -> int:
               "openai" if key else "OPENAI_API_KEY is empty")
         if key:
             _probe_openai(key)
+    elif provider == "gemini":
+        key = os.environ.get("GEMINI_API_KEY", "")
+        check("llm provider", OK if key else FAIL,
+              "gemini" if key else "GEMINI_API_KEY is empty")
+        if key:
+            _probe_gemini(key)
     else:
         check("llm provider", FAIL,
-              f"unknown LLM_PROVIDER={provider!r} (mock | anthropic | openai)")
+              f"unknown LLM_PROVIDER={provider!r} (mock | anthropic | openai | gemini)")
 
     endpoint = os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT", "")
     if endpoint:
@@ -156,6 +162,27 @@ def _probe_openai(key: str):
               f"HTTP {r.status_code}")
     except Exception as e:
         check("openai api reachable", FAIL, str(e))
+
+def _probe_gemini(key: str):
+    try:
+        import httpx
+
+        r = httpx.get(
+            "https://generativelanguage.googleapis.com/v1beta/models",
+            headers={
+                "x-goog-api-key": key,
+            },
+            timeout=15,
+        )
+
+        check(
+            "gemini api reachable",
+            OK if r.status_code == 200 else FAIL,
+            f"HTTP {r.status_code}",
+        )
+
+    except Exception as e:
+        check("gemini api reachable", FAIL, str(e))
 
 
 if __name__ == "__main__":

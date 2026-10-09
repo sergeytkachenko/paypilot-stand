@@ -31,8 +31,11 @@
 щось спитали в агента.** Інакше вам нема з чим порівнювати, і розмова
 зводиться до «мені здається, це неправильно».
 
-Для цього прикладу еталон — сама транзакція. Відкрийте
-`GET /api/_test/state/transactions` і знайдіть `TX-0801`:
+Для цього прикладу еталон — сама транзакція. Виконайте в терміналі docker
+```sh
+curl -X  GET localhost:8000/api/_test/state/transactions | grep -o '{"id":"TX-0801"[^}]*}'
+```
+У відповіді буде: 
 
 ```json
 {"id": "TX-0801", "account_id": "ACC-1009", "amount": 120.0,
@@ -93,7 +96,10 @@ I'm CUS-0008. Open a goods-not-received dispute for transaction TX-0801.
 
 ## 4. Подивитися, що записано
 
-Незворотна дія лишає рядок. Відкрийте `GET /api/_test/state/disputes`:
+Незворотна дія лишає рядок. Виконайте в терміналі docker
+```sh
+curl -X GET localhost:8000/api/_test/state/disputes | grep -o '{"id":1,"transaction_id":"TX-0801"[^}]*}'
+```
 
 ```json
 {"id": 1, "transaction_id": "TX-0801", "account_id": "ACC-1009",
